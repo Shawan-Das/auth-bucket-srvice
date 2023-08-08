@@ -1,0 +1,11 @@
+CREATE TABLE department (
+    id serial PRIMARY KEY,
+    department_name VARCHAR(50)
+);
+
+INSERT INTO department (department_name)
+VALUES
+    ('Engineering'),
+    ('Accounts'),
+    ('Sales'),
+    ('HR');
