@@ -9,3 +9,19 @@ VALUES
     ('Accounts'),
     ('Sales'),
     ('HR');
+
+CREATE TABLE employee (
+    id serial PRIMARY KEY,
+    employee_name VARCHAR(100) not null,
+	email VARCHAR(100) not null unique,
+	phone VARCHAR(11) not null,
+	address VARCHAR(1000) not null,
+	departmentId int,
+	FOREIGN KEY(departmentId) REFERENCES department(id)
+);
+
+INSERT INTO employee (employee_name, email, phone, address, departmentId)
+VALUES
+    ('Shan', 'shan@gmail.com','01626','shan/address',2),
+	('Shawon', 'shawon@gmail.com','01537','shawon/address',4),
+	('Shawan', 'shawan@gmail.com','01711','shawan/address',3);

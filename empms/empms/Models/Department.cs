@@ -12,4 +12,5 @@ namespace empms.Models
             [Column("department_name")]
             public string? DepartmentName { get; set; }
     }
+
 }

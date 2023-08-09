@@ -17,12 +17,13 @@ namespace StudentAPI.Models
         }
 
         public virtual DbSet<Department> Departments { get; set; } = null!;
+        public virtual DbSet<Employee> Employees { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseNpgsql("Host=localhost;Database=empms;Username=postgres;Password=postgres");
+                optionsBuilder.UseNpgsql("Host=localhost;port=8080;Database=empms;Username=postgres;Password=1234");
             }
         }
 

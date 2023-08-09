@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Intern\\DotNerCore6\\empms\\empms\\empms.csproj": {}
+    "C:\\Users\\Marani\\Downloads\\dotNet\\DotNerCore6\\DotNerCore6\\empms\\empms\\empms.csproj": {}
   },
   "projects": {
-    "D:\\Intern\\DotNerCore6\\empms\\empms\\empms.csproj": {
+    "C:\\Users\\Marani\\Downloads\\dotNet\\DotNerCore6\\DotNerCore6\\empms\\empms\\empms.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Intern\\DotNerCore6\\empms\\empms\\empms.csproj",
+        "projectUniqueName": "C:\\Users\\Marani\\Downloads\\dotNet\\DotNerCore6\\DotNerCore6\\empms\\empms\\empms.csproj",
         "projectName": "empms",
-        "projectPath": "D:\\Intern\\DotNerCore6\\empms\\empms\\empms.csproj",
-        "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
-        "outputPath": "D:\\Intern\\DotNerCore6\\empms\\empms\\obj\\",
+        "projectPath": "C:\\Users\\Marani\\Downloads\\dotNet\\DotNerCore6\\DotNerCore6\\empms\\empms\\empms.csproj",
+        "packagesPath": "C:\\Users\\Marani\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Marani\\Downloads\\dotNet\\DotNerCore6\\DotNerCore6\\empms\\empms\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\User\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Marani\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -22,6 +22,7 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\sdk\\7.0.306\\Sdks\\Microsoft.NET.Sdk.Web\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -72,7 +73,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.203\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.306\\RuntimeIdentifierGraph.json"
         }
       }
     }

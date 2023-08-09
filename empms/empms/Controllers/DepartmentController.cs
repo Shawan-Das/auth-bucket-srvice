@@ -6,90 +6,143 @@ using StudentAPI.Models;
 
 namespace empms.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]")]  
     [ApiController]
     public class DepartmentController : ControllerBase
     {
         private readonly PostgresContext _context;
 
-        public DepartmentController(PostgresContext context)
+		public DepartmentController(PostgresContext context)
         {
             _context = context;
         }
 
-        // GET: api/StudentDetails
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Department>>> GetStudentDetails()
+        // GET: api/DepartmentDetails
+        [HttpGet]             // Search by localhost/api/department
+		public async Task<ActionResult<IEnumerable<Department>>> GetDepartment()
         {
             return await _context.Departments.ToListAsync();
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Department>> Department(int id)
+        // Get By ID
+
+        [HttpGet("{id}")]    // Search by localhost/api/department/{id}
+		public async Task<ActionResult<Department>> Department(int id)
         {
-            var department = await _context.Departments.FindAsync(id);
-
-            if (department == null)
-            {
-                return NotFound();
-            }
-
-            return department;
-        }
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutDepartment(int id, Department department)
-        {
-            if (id != department.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(department).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
+				var department = await _context.Departments.FindAsync(id);
+
+				if (department == null)
+				{
+					return NotFound();
+				}
+				return department;
+
+			}
+            catch (Exception)
             {
-                if (!DepartmentExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error retreiving data from the database");
             }
-
-            return NoContent();
         }
 
-        [HttpPost]
-        public async Task<ActionResult<Department>> PostDepartment(Department department)
+        // Update Data [PUT operation]
+
+        [HttpPut("{id}")]
+		public async Task<IActionResult> PutDepartment(int id, Department department)
+		{
+			if (id != department.Id)
+			{
+				return BadRequest();
+			}
+			if (!DepartmentExists(id))
+			{
+				return NotFound();
+			}
+
+			_context.Entry(department).State = EntityState.Modified;
+
+			try
+			{
+				await _context.SaveChangesAsync();
+                return Ok("Data Update Successful");
+			}
+			catch (Exception)
+			{
+				return StatusCode(StatusCodes.Status500InternalServerError, "Error Updating Data");
+			}
+		}
+
+        // Create Data [post operation]
+
+		[HttpPost]
+        public async Task<ActionResult<Department>> CreateDepartment(Department department)
         {
-            _context.Departments.Add(department);
-            await _context.SaveChangesAsync();
+            try
+            {
+                if(department == null)
+                {
+                    return BadRequest();
+                }
+				_context.Departments.Add(department);
+				await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetDepartment", new { id = department.Id }, department);
+				return CreatedAtAction(nameof(GetDepartment), new { id = department.Id }, department);
+
+			}
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error Creating Data");
+            }
+            
         }
+
+
+
+        //Delete Data [DELETE operation]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDepartment(int id)
         {
-            var department = await _context.Departments.FindAsync(id);
-            if (department == null)
+            try
             {
-                return NotFound();
-            }
+				var deleteDepartment = await _context.Departments.FindAsync(id);
+				if (deleteDepartment == null)
+				{
+					return NotFound($"No Data with id:{id} found");
+				}
+                else
+                {
+					_context.Departments.Remove(deleteDepartment);
+					await _context.SaveChangesAsync();
 
-            _context.Departments.Remove(department);
-            await _context.SaveChangesAsync();
+/*					try
+					{
+						var deleteUser = await _context.Employees.FirstOrDefaultAsync(e => e.departmentId == id);
+						_context.Employees.Remove(deleteUser);
+						await _context.SaveChangesAsync();
 
-            return NoContent();
+						if (deleteUser != null)
+						{
+							_context.Employees.Remove(deleteUser);
+							await _context.SaveChangesAsync();
+							return Ok($"User: {deleteUser.employee_name} Delete Successful");
+						}
+					}
+					catch
+					{
+					}*/
+					//return Ok("User Delete Successful");
+
+					return Ok($"Data delete :{deleteDepartment.Id} successful");
+				}
+			}
+            catch(Exception)
+            {
+				return StatusCode(StatusCodes.Status500InternalServerError, "Error with Deleting Data");
+			}
         }
 
-
+        // Check for Data
         private bool DepartmentExists(int id)
         {
             return _context.Departments.Any(e => e.Id == id);
