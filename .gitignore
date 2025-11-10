@@ -4,3 +4,4 @@ build/**/initscripts
 build/**/*-spec.yml
 *.exe
 common
+.env
