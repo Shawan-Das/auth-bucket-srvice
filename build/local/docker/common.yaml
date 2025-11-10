@@ -1,0 +1,14 @@
+components:
+  schemas:
+    APIResponse:
+      type: object
+      properties:
+        serviceMessage:
+          type: string
+          description: Message set by the service
+        payload:
+          type: object
+          description: Could be a array objects or an object returned as API response
+        ts:
+          type: string
+          description: Server time stamp

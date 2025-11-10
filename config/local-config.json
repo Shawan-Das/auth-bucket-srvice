@@ -1,0 +1,45 @@
+{
+	"dbhost": "118.67.200.45",
+	"port": 9432,
+	"dnname": "saomit",
+	"uid": "sitlain",
+	"password": "SitatPass",
+	"jwtKey": "Khhiruieb7@(^8U2(@^BG298^)@222198",
+	"bypassAuth": [
+		"/login",
+		"/CreateToken"
+	],
+	"bypassAuth_V2": {
+		"reqBody": [
+			"/login-V2",
+			"/CreateToken",
+			"/ValidateToken",
+			"/forgot-password",
+			"/token-time-extend",
+			"/refresh-token"
+		],
+		"params": [
+			"/confirm-otp",
+			"/api/v1/login/forgotpass/passconfirm",
+			"/swagger/",
+			"/test",
+			"/dashboard-load"
+		]
+	},
+	"sender_email": "satcomdevs@gmail.com",
+	"app_pass": "lkyechbbeuddkodg",
+	"smtp_host": "smtp.gmail.com",
+	"smtp_port": 587,
+	"config_url" : "config/local-config.json",
+	"common_html": "util/common.html",
+	"ui_url": "http://118.67.213.45:7020",
+	
+	"common_schema_name": "common",
+	"db_host": "118.67.213.45",
+	"db_port": 9432,
+	"db_name": "satcomit",
+	"db_username": "sitladmin",
+	"db_password": "SitL#satPass",
+	"access_secret": "09e138efcd2ad2974227128b4209cdbc70a46a7c6b73fabd486c8cd35b51412716520e5719338f6e4e75d998069d293dc1510c025df4c9a219c03af6bce45c8faa8fc0af30f3ef7879929de9e56cb10a461579645e87fbf9c23ac3cc9f4a17839ba9b57e",
+	"api_port": "3000"
+}

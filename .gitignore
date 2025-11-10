@@ -1,0 +1,6 @@
+hrms
+.vscode/settings.json
+build/**/initscripts
+build/**/*-spec.yml
+*.exe
+common

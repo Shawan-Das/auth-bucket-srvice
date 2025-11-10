@@ -1,0 +1,95 @@
+refdata:
+    put:
+      security:
+      - bearerAuth: [] 
+      description: Add a set of new ReferenceDataRecord in the system
+      tags:
+        - refdata   
+      requestBody:
+        content:
+           application/json:
+            schema:
+               type: array
+               items:
+                  $ref: "#/components/schemas/ReferenceDataRecord"
+      responses:
+        '200':
+          description: ReferenceDataRecord creation result
+          content:
+            application/json:
+              schema:
+                $ref: "common.yaml#/components/schemas/APIResponse"
+    post:
+      security:
+      - bearerAuth: [] 
+      description: 
+         Modifies a set of new ReferenceDataRecord in the system. 
+         Category and value is considered as key for update. 
+         Setting display order to -1 removes it from searching
+      tags:
+        - refdata   
+      requestBody:
+        content:
+           application/json:
+            schema:
+               type: array
+               items:
+                  $ref: "#/components/schemas/ReferenceDataRecord"
+      responses:
+        '200':
+          description: ReferenceDataRecord modification result
+          content:
+            application/json:
+              schema:
+                $ref: "common.yaml#/components/schemas/APIResponse"
+    delete:
+      security:
+      - bearerAuth: [] 
+      description: 
+         Delets a set of new ReferenceDataRecord in the system. 
+         Category and value is considered as key for deletion. 
+      tags:
+        - refdata            
+      requestBody:
+        content:
+           application/json:
+            schema:
+               type: array
+               items:
+                  $ref: "#/components/schemas/ReferenceDataRecord"
+      responses:
+        '200':
+          description: ReferenceDataRecord deletion result
+          content:
+            application/json:
+              schema:
+                $ref: "common.yaml#/components/schemas/APIResponse"
+components:
+  securitySchemes:
+    bearerAuth:          
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    ReferenceDataRecord:
+      type: object
+      description: Reference data record for various look ups and drop downs
+      properties:
+       category:
+         type: string
+         description: Category of the reference data
+       value:
+         type: string
+         description: Internal that is stored as a result of selecting a dropdown
+       diplaytext:
+         type: string
+         description: String that is displayed on the screen 
+       displayorder:
+         type: integer
+         description: Display order. -1 means not displayed/inactive
+       extrainfo:
+         type: object
+         description: An optional arbirary json to hold extra information.  
+      required:
+      - category
+      - value

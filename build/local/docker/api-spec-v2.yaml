@@ -1,0 +1,25 @@
+openapi: '3.0.2'
+info:
+  version: '2.0.0'
+  title: Daily Star HR module service API sepcification
+  description: API specification for all the modules and function
+servers:
+  - url: http://localhost:7070/
+    description: Local server
+  - url: http://150.107.50.59:7070
+    description: SIT server
+paths:
+  /:
+   get:
+      description: Returns the server status
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/APIResponse'
+    
+  /api/refdata:
+    $ref: 'refdataservice.yaml#/refdata'
+     
