@@ -59,5 +59,6 @@ func initAppConfigViper(configPath string) {
 		}
 	}
 	viper.AutomaticEnv()
+	fmt.Println("Viper automatic env is set: ", viper.GetViper().GetString("db_host"))
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 }

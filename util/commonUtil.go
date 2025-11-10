@@ -12,7 +12,9 @@ import (
 
 	"github.com/alexedwards/argon2id"
 )
+
 var ConfigFileName string
+
 func TrimString(s string) string {
 	input := strings.TrimSpace(regexp.MustCompile(`\s+`).ReplaceAllString(s, " "))
 	return input
@@ -65,7 +67,7 @@ func DoStringMatch(password string, hash string) bool {
 	return match
 }
 
-func GenerateOTP(inputs string) string {
+func GenerateOTP() string {
 	rand.Seed(time.Now().UnixNano())
 	min := 100000
 	max := 999999
@@ -163,27 +165,4 @@ func ContainsSubstring(arr []string, value string) bool {
 	return false
 }
 
-func ToStringSlice(slice []interface{}) []string {
-	result := make([]string, len(slice))
-	for i, v := range slice {
-		result[i] = v.(string)
-	}
-	return result
-}
 
-// read config file
-func ReturnConfigFileDetails(fileDetails string) (string, string, string) {
-	if fileDetails[0]== '.' {
-		fileDetails = fileDetails[1:]
-	}
-	split1 := strings.Split(fileDetails, ".")
-	fileType := split1[1]
-
-	split2 := strings.Split(split1[0], "/")
-	fileName := split2[len(split2)-1]
-	split2 = split2[:len(split2)-1]
-
-	fileLocation := strings.Join(split2, "/")
-
-	return fileName, fileType, "./" + fileLocation
-}
