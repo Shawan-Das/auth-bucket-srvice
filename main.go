@@ -11,7 +11,7 @@ import (
 
 	"github.com/spf13/viper"
 	"github.com/tools/common/service"
-	_ "github.com/tools/common/util"
+	"github.com/tools/common/util"
 )
 
 var _version = "default"
@@ -22,6 +22,7 @@ func main() {
 	port := flag.Int("port", 7070, "Port to run the server on")
 
 	flag.Parse()
+	util.ConfigFileName = *configFilePath
 	configBytes, err := os.ReadFile(*configFilePath)
 	if err != nil {
 		fmt.Println("Unable to read configuration file ", err.Error())

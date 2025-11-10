@@ -41,5 +41,7 @@
 	"db_username": "sitladmin",
 	"db_password": "SitL#satPass",
 	"access_secret": "09e138efcd2ad2974227128b4209cdbc70a46a7c6b73fabd486c8cd35b51412716520e5719338f6e4e75d998069d293dc1510c025df4c9a219c03af6bce45c8faa8fc0af30f3ef7879929de9e56cb10a461579645e87fbf9c23ac3cc9f4a17839ba9b57e",
-	"api_port": "3000"
+	"api_port": "3000",
+	"access_token_duration_minutes": 15,
+	"refresh_token_duration_hours": 168
 }

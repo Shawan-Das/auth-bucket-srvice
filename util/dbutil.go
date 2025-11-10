@@ -228,6 +228,11 @@ func (dbu *PGSqlDBUtil) InsertMultiple(sqls []string, params [][]interface{}) (i
 	return count, nil
 }
 
+// GetConnection returns the database connection
+func (dbu *PGSqlDBUtil) GetConnection() *pgx.Conn {
+	return dbu.dbConnection
+}
+
 // Shutdown close the db connection
 func (dbu *PGSqlDBUtil) Shutdown() {
 	if dbu.dbConnection != nil {

@@ -32,19 +32,8 @@ type APIResponse struct {
 
 // CommonRestService implements the rest API for HRM transactions
 type CommonRestService struct {
-	// authService              *AuthenticationRESTService
 	dbUtil      *util.PGSqlDBUtil
-	userService *UserService
-	// companyService           *CompanyService
-	// yearService              *YearService
-	// uiRouteService           *UiRouteService
-	// loginService             *LoginService
-	// tokenService             *TokenService
-	// authorizationService     *AuthorizationService
-	// loginLogoutService *LoginLogoutService
-	// tokenService       *TokenService
-	// entryService       *EntryService
-	// yearClosingService *YearClosingService
+	authService *AuthService
 }
 
 // NewCommonRestService retuens a new initialized version of the service
@@ -69,12 +58,12 @@ func (srv *CommonRestService) Init(config []byte, verbose bool) error {
 	}
 	srv.dbUtil = dbUtil
 
-	// authService := NewAuthenticationRESTService(config, srv.dbUtil, verbose)
-	// if authService == nil {
-	// 	_logger.Errorf("Error in intializing AuthenticationRESTService ")
-	// 	return fmt.Errorf("error in intializing AuthenticationRESTService")
-	// }
-	// srv.authService = authService
+	authService := NewAuthService(dbUtil.GetConnection(), verbose)
+	if authService == nil {
+		_logger.Errorf("Error in intializing AuthService")
+		return fmt.Errorf("error in intializing AuthService")
+	}
+	srv.authService = authService
 
 	_logger.Info("Service instance intialized. Waiting to lauch the service")
 
@@ -129,7 +118,7 @@ func (srv *CommonRestService) Serve(address string, port int, stopSignal chan bo
 		c.JSON(http.StatusOK, buildResponse(true, "Service Available", nil))
 	})
 
-	// srv.authService.AddRouters(router)
+	srv.authService.AddRouters(router)
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
