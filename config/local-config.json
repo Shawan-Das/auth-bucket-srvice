@@ -1,9 +1,9 @@
 {
-	"dbhost": "db.gtfqhsjwwlzmcinusayh.supabase.co",
+	"dbhost": "localhost",
 	"port": 5432,
 	"dnname": "postgres",
 	"uid": "postgres",
-	"password": "rzBqING3j6nyiiXD",
+	"password": "rzBqI3j6nyiiXD",
 	"jwtKey": "Khhiruieb7@(^8U2(@^BG298^)@222198",
 	"bypassAuth": [
 		"/login",
@@ -26,16 +26,14 @@
 			"/dashboard-load"
 		]
 	},
-	"sender_email": "satcomdevs@gmail.com",
-	"app_pass": "lkyechbbeuddkodg",
+	"sender_email": "satvs@gmail.com",
+	"app_pass": "lkeuddkodg",
 	"smtp_host": "smtp.gmail.com",
 	"smtp_port": 587,
 	"config_url" : "config/local-config.json",
 	"common_html": "util/common.html",
-	"ui_url": "http://118.67.213.45:7020",
-	
 	"common_schema_name": "common",
-	"db_host": "db.gtfqhsjwwlzmcinusayh.supabase.co",
+	"db_host": "localhost",
 	"db_port": 5432,
 	"db_name": "postgres",
 	"db_username": "postgres",
