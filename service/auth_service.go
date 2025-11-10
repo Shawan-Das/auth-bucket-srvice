@@ -4,11 +4,12 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 	"github.com/tools/common/model"
 	"github.com/tools/common/util"
 )
 
-type Authorization struct{
+type Authorization struct {
 	tokenRepository *TokenRepository
 }
 
@@ -16,24 +17,10 @@ func (authorizationrepository *Authorization) ValidateAuthorization_V2(c *gin.Co
 	url := c.Request.URL
 	uri := url.RequestURI()
 
-	config, err := util.LoadConfig(util.ConfigFileName)
-	if err != nil {
-		return model.ValidateAuthorizationOutput{
-			Message:   "Unable to read local-config.json file.",
-			IsSuccess: false,
-		}
-	}
+	authorizationUrls := viper.GetViper().GetStringMapString("bypassAuth_V2")
 
-	authorizationUrls, ok := config["bypassAuth_V2"].(map[string]interface{})
-	if !ok {
-		return model.ValidateAuthorizationOutput{
-			Message:   "Invalid authorizationUrls format in config.",
-			IsSuccess: false,
-		}
-	}
-
-	equalFoldUrls, equalFoldOk := authorizationUrls["reqBody"].([]interface{})
-	containsUrls, containsOk := authorizationUrls["params"].([]interface{})
+	equalFoldUrls, equalFoldOk := authorizationUrls["reqBody"]
+	containsUrls, containsOk := authorizationUrls["params"]
 
 	if !equalFoldOk || !containsOk {
 		return model.ValidateAuthorizationOutput{
@@ -42,8 +29,8 @@ func (authorizationrepository *Authorization) ValidateAuthorization_V2(c *gin.Co
 		}
 	}
 
-	equalFoldStrUrls := util.ToStringSlice(equalFoldUrls)
-	containsStrUrls := util.ToStringSlice(containsUrls)
+	equalFoldStrUrls := strings.Split(equalFoldUrls, ",")
+	containsStrUrls := strings.Split(containsUrls, ",")
 
 	if util.ContainsString(equalFoldStrUrls, uri) || util.ContainsSubstring(containsStrUrls, uri) {
 		return model.ValidateAuthorizationOutput{

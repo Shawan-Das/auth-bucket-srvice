@@ -59,26 +59,5 @@ func ViperReturnStringConfigVariableFromLocalConfigJSON(key string) string {
 
 // ViperReturnIntegerConfigVariableFromLocalConfigJSON returns values of int variable from local-config.json
 func ViperReturnIntegerConfigVariableFromLocalConfigJSON(key string) int {
-	// viper.SetConfigFile("local-config.json")
-	var fileDetails string = ConfigFileName
-	// fmt.Println("File Name1 :", fileDetails)
-	var (
-		fileName string
-		fileType string
-		location string
-	)
-	if fileDetails != "" {
-		fileName, fileType, location = ReturnConfigFileDetails(fileDetails)
-	}
-
-	viper.SetConfigName(fileName) // name of config file (without extension)
-	viper.SetConfigType(fileType) // REQUIRED if the config file does not have the extension in the name
-	viper.AddConfigPath(location) // path to look for the config file in
-	// viper.AddConfigPath("$HOME/.appname") // call multiple times to add many search paths
-	err := viper.ReadInConfig()
-	if err != nil {
-		log.Fatalf("Error while reading config file %s", err)
-	}
-	value := viper.GetInt(key)
-	return value
+	return viper.GetViper().GetInt(key)
 }
