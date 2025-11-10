@@ -108,21 +108,21 @@ func (srv *CommonRestService) Serve(address string, port int, stopSignal chan bo
 		authorizationRepository := new(Authorization)
 
 		// First, try the first authorization method.
-		validateAuthorizationOutputV2 := authorizationRepository.ValidateAuthorization(c)
+		validateAuthorizationOutputV2 := authorizationRepository.ValidateAuthorization_V2(c)
 		if validateAuthorizationOutputV2.IsSuccess {
 			c.Next()
 			return
 		}
 
 		// If the first method fails, try the second authorization method.
-		validateAuthorizationOutput := authorizationRepository.ValidateAuthorization(c)
-		if validateAuthorizationOutput.IsSuccess {
-			c.Next()
-			return
-		}
+		// validateAuthorizationOutput := authorizationRepository.ValidateAuthorization(c)
+		// if validateAuthorizationOutput.IsSuccess {
+		// 	c.Next()
+		// 	return
+		// }
 
 		// If both methods fail, return an unauthorized response and abort the request.
-		c.JSON(http.StatusUnauthorized, validateAuthorizationOutput)
+		c.JSON(http.StatusUnauthorized, validateAuthorizationOutputV2)
 		c.Abort()
 	})
 	router.GET("/", func(c *gin.Context) {
