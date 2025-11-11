@@ -13,9 +13,7 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/satcomit/hrms/internal/util"
-	swaggerfiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
+	"github.com/rest/api/internal/util"
 
 	"github.com/sirupsen/logrus"
 )
@@ -23,9 +21,9 @@ import (
 var _ServerLog = logrus.New()
 
 type APIServer struct {
-	verbose                bool
-	dbConnection           *util.DBConnectionWrapper
-	authService            *AuthenticationRESTService
+	verbose      bool
+	dbConnection *util.DBConnectionWrapper
+	authService  *RESTService
 
 	serverKey       string
 	serverCertFile  string
@@ -96,7 +94,7 @@ func (s *APIServer) Serve(port int) {
 	}
 
 	cnf.AllowAllOrigins = true
-	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))	// ^ Swagger 
+	// router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler)) // ^ Swagger
 	router.Use(cors.New(cnf))
 	router.Static("/apidoc", "./api/")
 	//shared api service

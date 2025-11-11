@@ -18,7 +18,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgtype"
 
-	"github.com/satcomit/hrms/internal/util"
+	"github.com/rest/api/internal/util"
 	"github.com/sirupsen/logrus"
 )
 
@@ -238,7 +238,6 @@ func removeSpacesAndSpecialChars(input string) string {
 	// Replace all characters NOT letters or digits with empty string
 	return reg.ReplaceAllString(input, "")
 }
-
 
 func BuildDataMap[T any](objs []T, keySelector func(T) string) map[string][]T {
 	result := make(map[string][]T)

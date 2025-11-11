@@ -3,94 +3,21 @@ package service
 import (
 	"context"
 	"crypto/sha256"
-	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	auth "github.com/satcomit/hrms/internal/dbmodel/db_query"
+	auth "github.com/rest/api/internal/dbmodel/db_query"
 
-	"github.com/satcomit/hrms/internal/model"
-	"github.com/satcomit/hrms/internal/util"
-
-	"github.com/sirupsen/logrus"
+	"github.com/rest/api/internal/model"
 )
 
-var _asLogger = logrus.New()
-
-// AuthenticationRESTService provides authentication related rest services
-type AuthenticationRESTService struct {
-	dbConn        *util.DBConnectionWrapper
-	jwtSigningKey []byte
-	bypassAuth    map[string]bool
-}
-
-// NewAuthenticationRESTService returns a new initialized version of the service
-func NewAuthenticationRESTService(config []byte, dbConnection *util.DBConnectionWrapper, verbose bool) *AuthenticationRESTService {
-	service := new(AuthenticationRESTService)
-	if err := service.Init(config, dbConnection, verbose); err != nil {
-		_asLogger.Errorf("Unable to initialize service instance %v", err)
-		return nil
-	}
-	return service
-}
-
-// Init initializes the service instance
-func (s *AuthenticationRESTService) Init(config []byte, dbConnection *util.DBConnectionWrapper, verbose bool) error {
-	if verbose {
-		_asLogger.SetLevel(logrus.DebugLevel)
-	}
-	if dbConnection == nil {
-		return fmt.Errorf("null DB Util reference passed")
-	}
-	s.dbConn = dbConnection
-	var conf model.AuthServiceConfig
-	err := json.Unmarshal(config, &conf)
-	if err != nil {
-		_asLogger.Error("Unable to parse config json file ", err)
-		return err
-	}
-	if conf.JWTKey != nil && len(*conf.JWTKey) > 0 {
-		s.jwtSigningKey = []byte(*conf.JWTKey)
-	}
-	s.bypassAuth = make(map[string]bool)
-	s.bypassAuth["/"] = true
-	if conf.BypassAuth != nil && len(conf.BypassAuth) > 0 {
-		for _, url := range conf.BypassAuth {
-			s.bypassAuth[url] = true
-		}
-	}
-	_asLogger.Infof("Successfully initialized AuthenticationRESTService")
-	return nil
-}
-
-// AddRouters add api end points specific to this service
-func (s *AuthenticationRESTService) AddRouters(apiBase string, router *gin.Engine) {
-	router.POST("/api/auth/create", func(c *gin.Context) {
-		resp := s.createUser(c)
-		c.JSON(resp.StatusCode, resp)
-	})
-
-	router.POST("/api/auth/login", func(c *gin.Context) {
-		resp := s.validateLogin(c)
-		c.JSON(resp.StatusCode, resp)
-	})
-
-	router.POST("/api/auth/resetpwd", func(c *gin.Context) {
-		resp := s.resetPassword(c)
-		c.JSON(resp.StatusCode, resp)
-	})
-
-	router.GET("/api/auth/users", func(c *gin.Context) {
-		resp := s.getAllUsers(c)
-		c.JSON(resp.StatusCode, resp)
-	})
-}
+// var _usLogger = logrus.New()
 
 // /api/auth/create - create user
-func (s *AuthenticationRESTService) createUser(c *gin.Context) APIResponse {
+func (s *RESTService) createUser(c *gin.Context) APIResponse {
 	var input model.CreateUserInput
 	if !parseInput(c, &input) {
 		return BuildResponse400("Invalid input provided")
@@ -143,7 +70,7 @@ func (s *AuthenticationRESTService) createUser(c *gin.Context) APIResponse {
 }
 
 // /api/auth/login - login (supports username, email, or phone)
-func (s *AuthenticationRESTService) validateLogin(c *gin.Context) APIResponse {
+func (s *RESTService) validateLogin(c *gin.Context) APIResponse {
 	var input model.LoginInput
 	if !parseInput(c, &input) {
 		return BuildResponse400("Invalid input provided")
@@ -191,7 +118,7 @@ func (s *AuthenticationRESTService) validateLogin(c *gin.Context) APIResponse {
 }
 
 // /api/auth/resetpwd - reset password
-func (s *AuthenticationRESTService) resetPassword(c *gin.Context) APIResponse {
+func (s *RESTService) resetPassword(c *gin.Context) APIResponse {
 	var input model.AuthDataInput
 	if !parseInput(c, &input) {
 		return BuildResponse400("Invalid input provided")
@@ -232,7 +159,7 @@ func (s *AuthenticationRESTService) resetPassword(c *gin.Context) APIResponse {
 }
 
 // /api/auth/users - get all users (requires authentication)
-func (s *AuthenticationRESTService) getAllUsers(c *gin.Context) APIResponse {
+func (s *RESTService) getAllUsers(c *gin.Context) APIResponse {
 	ctx := context.Background()
 	db := s.dbConn.GetPool()
 	qtx := auth.New(db)
@@ -256,12 +183,12 @@ func (s *AuthenticationRESTService) getAllUsers(c *gin.Context) APIResponse {
 	return BuildResponse200("Users retrieved successfully", userList)
 }
 
-func (s *AuthenticationRESTService) getHashOf(password string) string {
+func (s *RESTService) getHashOf(password string) string {
 	shaBytes := sha256.Sum256([]byte(password))
 	return fmt.Sprintf("%x", shaBytes)
 }
 
-func (s *AuthenticationRESTService) createJWTToken(userID int32, email, userName string) string {
+func (s *RESTService) createJWTToken(userID int32, email, userName string) string {
 	if s.jwtSigningKey == nil {
 		return ""
 	}
@@ -287,7 +214,7 @@ func (s *AuthenticationRESTService) createJWTToken(userID int32, email, userName
 	return tokenStr
 }
 
-func (s *AuthenticationRESTService) checkAuth(c *gin.Context) bool {
+func (s *RESTService) checkAuth(c *gin.Context) bool {
 	url := c.Request.URL
 	uri := url.RequestURI()
 
