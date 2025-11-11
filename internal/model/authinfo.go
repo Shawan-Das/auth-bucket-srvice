@@ -2,6 +2,8 @@ package model
 
 import (
 	"encoding/json"
+
+	"github.com/dgrijalva/jwt-go"
 )
 
 // const _AuthInfoTable = "hrm.authentication_info"
@@ -57,4 +59,27 @@ func BuildACLInfo(objs []interface{}) []ACLInfo {
 		return nil
 	}
 	return authData
+}
+
+type AuthDataInput struct {
+	Email       string `json:"email,omitempty"` // For backward compatibility
+	Login       string `json:"login,omitempty"` // Can be username, email, or phone
+	Password    string `json:"pwd"`
+	NewPassword string `json:"newPwd,omitempty"`
+	Phone       string `json:"phone,omitempty"`
+	UserName    string `json:"userName,omitempty"`
+	Role        string `json:"role,omitempty"`
+}
+
+// AuthorizationClaims JWTTokenClaims
+type AuthorizationClaims struct {
+	UserID   int32  `json:"user_id"`
+	Email    string `json:"email"`
+	UserName string `json:"user_name"`
+	jwt.StandardClaims
+}
+
+type AuthServiceConfig struct {
+	JWTKey     *string  `json:"jwtKey"`
+	BypassAuth []string `json:"bypassAuth"`
 }

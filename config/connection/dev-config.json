@@ -7,20 +7,17 @@
 	"timeout": 100,
 	"connRetryCount": 1,
 	"connRetryInterval": 5000,
-	"testEmailID":"connectsudipdutta@gmail.com",
 	"jwtKey":"s@3j7a91j0K1jm2!3921)82",
-	"bypassAuth":["/api/auth/login","/api/auth/updatepwd","/apidoc/index.html","/apidoc/swagger.yaml"],
+	"bypassAuth":[
+		"/api/auth/create",
+		"/api/auth/login",
+		"/api/auth/resetpwd",
+		"/apidoc/index.html",
+		"/apidoc/swagger.yaml"
+	],
 	"adminEmailId":"admin@satcombd.com",
 	"adminPassword":"admin4test",
 	"adminEmpCode":"0000",
-	"aws": {
-        "s3_access_key_id": "acccessid",
-        "s3_secret_access_key": "accesskey",
-        "s3_region": "region",
-        "s3_bucket": "bucket",
-        "s3_folder": "profile folde",
-        "s3_url":"connection url"
-    },
 	"rptServiceLink":"http://192.168.1.151:9985/convert",
 	"rptFilePath":"./",
 	"rptAuthKey":"cnp4test",

@@ -12,6 +12,7 @@ import (
 	"github.com/gin-gonic/gin"
 	auth "github.com/satcomit/hrms/internal/dbmodel/db_query"
 
+	"github.com/satcomit/hrms/internal/model"
 	"github.com/satcomit/hrms/internal/util"
 
 	"github.com/sirupsen/logrus"
@@ -24,36 +25,6 @@ type AuthenticationRESTService struct {
 	dbConn        *util.DBConnectionWrapper
 	jwtSigningKey []byte
 	bypassAuth    map[string]bool
-}
-
-type authDataInput struct {
-	Email       string `json:"email"`
-	Password    string `json:"pwd"`
-	NewPassword string `json:"newPwd,omitempty"`
-	Phone       string `json:"phone,omitempty"`
-	UserName    string `json:"userName,omitempty"`
-	Role        string `json:"role,omitempty"`
-}
-
-type createUserInput struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-	Phone    string `json:"phone"`
-	UserName string `json:"userName,omitempty"`
-	Role     string `json:"role,omitempty"`
-}
-
-// AuthorizationClaims JWTTokenClaims
-type AuthorizationClaims struct {
-	UserID   int32  `json:"user_id"`
-	Email    string `json:"email"`
-	UserName string `json:"user_name"`
-	jwt.StandardClaims
-}
-
-type authServiceConfig struct {
-	JWTKey     *string  `json:"jwtKey"`
-	BypassAuth []string `json:"bypassAuth"`
 }
 
 // NewAuthenticationRESTService returns a new initialized version of the service
@@ -75,7 +46,7 @@ func (s *AuthenticationRESTService) Init(config []byte, dbConnection *util.DBCon
 		return fmt.Errorf("null DB Util reference passed")
 	}
 	s.dbConn = dbConnection
-	var conf authServiceConfig
+	var conf model.AuthServiceConfig
 	err := json.Unmarshal(config, &conf)
 	if err != nil {
 		_asLogger.Error("Unable to parse config json file ", err)
@@ -111,11 +82,16 @@ func (s *AuthenticationRESTService) AddRouters(apiBase string, router *gin.Engin
 		resp := s.resetPassword(c)
 		c.JSON(resp.StatusCode, resp)
 	})
+
+	router.GET("/api/auth/users", func(c *gin.Context) {
+		resp := s.getAllUsers(c)
+		c.JSON(resp.StatusCode, resp)
+	})
 }
 
 // /api/auth/create - create user
 func (s *AuthenticationRESTService) createUser(c *gin.Context) APIResponse {
-	var input createUserInput
+	var input model.CreateUserInput
 	if !parseInput(c, &input) {
 		return BuildResponse400("Invalid input provided")
 	}
@@ -166,31 +142,32 @@ func (s *AuthenticationRESTService) createUser(c *gin.Context) APIResponse {
 	return BuildResponse200("User created successfully", nil)
 }
 
-// /api/auth/login - login
+// /api/auth/login - login (supports username, email, or phone)
 func (s *AuthenticationRESTService) validateLogin(c *gin.Context) APIResponse {
-	var input authDataInput
+	var input model.LoginInput
 	if !parseInput(c, &input) {
 		return BuildResponse400("Invalid input provided")
 	}
 
-	if input.Email == "" || input.Password == "" {
-		return BuildResponse400("Email and password are required")
+	if input.Login == "" || input.Password == "" {
+		return BuildResponse400("Login identifier (username/email/phone) and password are required")
 	}
 
 	ctx := context.Background()
 	db := s.dbConn.GetPool()
 	qtx := auth.New(db)
 
-	user, err := qtx.GetUserByEmail(ctx, input.Email)
+	// Try to find user by username, email, or phone
+	user, err := qtx.GetUserByLogin(ctx, input.Login)
 	if err != nil {
 		_asLogger.Errorf("Error getting user: %v", err)
-		return BuildResponse404("Invalid email or password", false)
+		return BuildResponse404("Invalid login credentials or password", false)
 	}
 
 	// Check password
 	hashedPassword := s.getHashOf(input.Password)
 	if user.Pass != hashedPassword {
-		return BuildResponse404("Invalid email or password", false)
+		return BuildResponse404("Invalid login credentials or password", false)
 	}
 
 	// Check if password is valid
@@ -215,7 +192,7 @@ func (s *AuthenticationRESTService) validateLogin(c *gin.Context) APIResponse {
 
 // /api/auth/resetpwd - reset password
 func (s *AuthenticationRESTService) resetPassword(c *gin.Context) APIResponse {
-	var input authDataInput
+	var input model.AuthDataInput
 	if !parseInput(c, &input) {
 		return BuildResponse400("Invalid input provided")
 	}
@@ -254,6 +231,31 @@ func (s *AuthenticationRESTService) resetPassword(c *gin.Context) APIResponse {
 	return BuildResponse200("Password reset successfully", nil)
 }
 
+// /api/auth/users - get all users (requires authentication)
+func (s *AuthenticationRESTService) getAllUsers(c *gin.Context) APIResponse {
+	ctx := context.Background()
+	db := s.dbConn.GetPool()
+	qtx := auth.New(db)
+
+	users, err := qtx.GetAllUsers(ctx)
+	if err != nil {
+		_asLogger.Errorf("Error getting users: %v", err)
+		return BuildResponse500("Failed to retrieve users", err.Error())
+	}
+
+	// Transform to response format
+	userList := make([]map[string]interface{}, 0, len(users))
+	for _, user := range users {
+		userList = append(userList, map[string]interface{}{
+			"code":  user.UserID,
+			"name":  user.UserName,
+			"email": user.Email,
+		})
+	}
+
+	return BuildResponse200("Users retrieved successfully", userList)
+}
+
 func (s *AuthenticationRESTService) getHashOf(password string) string {
 	shaBytes := sha256.Sum256([]byte(password))
 	return fmt.Sprintf("%x", shaBytes)
@@ -263,13 +265,13 @@ func (s *AuthenticationRESTService) createJWTToken(userID int32, email, userName
 	if s.jwtSigningKey == nil {
 		return ""
 	}
-	expDate := time.Now().Add(1 * time.Hour).Unix()
-	claim := AuthorizationClaims{
-		userID,
-		email,
-		userName,
-		jwt.StandardClaims{
-			ExpiresAt: expDate,
+	claim := model.AuthorizationClaims{
+		UserID:   userID,
+		Email:    email,
+		UserName: userName,
+		StandardClaims: jwt.StandardClaims{
+			IssuedAt:  time.Now().Unix(),
+			ExpiresAt: time.Now().Add(1 * time.Hour).Unix(),
 			Issuer:    "Auth Service",
 			Id:        fmt.Sprintf("%d", userID),
 		},
@@ -289,13 +291,8 @@ func (s *AuthenticationRESTService) checkAuth(c *gin.Context) bool {
 	url := c.Request.URL
 	uri := url.RequestURI()
 
-	// Allow bypass URLs
+	// Allow bypass URLs from config
 	if _, isFound := s.bypassAuth[uri]; isFound {
-		return true
-	}
-
-	// Allow auth endpoints without token
-	if uri == "/api/auth/create" || uri == "/api/auth/login" || uri == "/api/auth/resetpwd" {
 		return true
 	}
 

@@ -10,8 +10,10 @@ import (
 
 type Querier interface {
 	CreateUser(ctx context.Context, arg CreateUserParams) error
+	GetAllUsers(ctx context.Context) ([]GetAllUsersRow, error)
 	// --------------------- AUTHENTICATION ------------------------------
 	GetUserByEmail(ctx context.Context, email string) (CommonUser, error)
+	GetUserByLogin(ctx context.Context, userName string) (CommonUser, error)
 	UpdatePassword(ctx context.Context, arg UpdatePasswordParams) error
 }
 

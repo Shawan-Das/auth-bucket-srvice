@@ -33,6 +33,38 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
 	return err
 }
 
+const getAllUsers = `-- name: GetAllUsers :many
+SELECT user_id, user_name, email 
+FROM common.users 
+ORDER BY user_id
+`
+
+type GetAllUsersRow struct {
+	UserID   int32  `db:"user_id" json:"user_id"`
+	UserName string `db:"user_name" json:"user_name"`
+	Email    string `db:"email" json:"email"`
+}
+
+func (q *Queries) GetAllUsers(ctx context.Context) ([]GetAllUsersRow, error) {
+	rows, err := q.db.Query(ctx, getAllUsers)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetAllUsersRow
+	for rows.Next() {
+		var i GetAllUsersRow
+		if err := rows.Scan(&i.UserID, &i.UserName, &i.Email); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getUserByEmail = `-- name: GetUserByEmail :one
 SELECT user_id, user_name, email, phone, pass, pss_valid, otp, otp_valid, otp_exp, role 
 FROM common.users 
@@ -42,6 +74,30 @@ WHERE email = $1
 // --------------------- AUTHENTICATION ------------------------------
 func (q *Queries) GetUserByEmail(ctx context.Context, email string) (CommonUser, error) {
 	row := q.db.QueryRow(ctx, getUserByEmail, email)
+	var i CommonUser
+	err := row.Scan(
+		&i.UserID,
+		&i.UserName,
+		&i.Email,
+		&i.Phone,
+		&i.Pass,
+		&i.PssValid,
+		&i.Otp,
+		&i.OtpValid,
+		&i.OtpExp,
+		&i.Role,
+	)
+	return i, err
+}
+
+const getUserByLogin = `-- name: GetUserByLogin :one
+SELECT user_id, user_name, email, phone, pass, pss_valid, otp, otp_valid, otp_exp, role 
+FROM common.users 
+WHERE user_name = $1 OR email = $1 OR phone = $1
+`
+
+func (q *Queries) GetUserByLogin(ctx context.Context, userName string) (CommonUser, error) {
+	row := q.db.QueryRow(ctx, getUserByLogin, userName)
 	var i CommonUser
 	err := row.Scan(
 		&i.UserID,
