@@ -1,0 +1,44 @@
+{
+	"dbhost":"db.gtfqhsjwwlzmcinusayh.supabase.co",
+	"dbPort":5432,
+	"dbname":"postgres",
+	"dbuid":"postgres",
+	"dbpassword":"rzBqING3j6nyiiXD",
+	"timeout": 100,
+	"connRetryCount": 1,
+	"connRetryInterval": 5000,
+	"testEmailID":"connectsudipdutta@gmail.com",
+	"jwtKey":"s@3j7a91j0K1jm2!3921)82",
+	"bypassAuth":["/api/auth/login","/api/auth/updatepwd","/apidoc/index.html","/apidoc/swagger.yaml"],
+	"adminEmailId":"admin@satcombd.com",
+	"adminPassword":"admin4test",
+	"adminEmpCode":"0000",
+	"aws": {
+        "s3_access_key_id": "AKIA3NZGK2LFAIX2DW6F",
+        "s3_secret_access_key": "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",
+        "s3_region": "ap-south-1",
+        "s3_bucket": "satcomerp",
+        "s3_folder": "userprofile",
+        "s3_url":"https://satcomerp.s3.ap-south-1.amazonaws.com"
+    },
+	"apiShareKey": {
+		"ERP": "N8T@-OFPVjFONNDJPLJZYE3KeB7_t*hd",
+		"HRMS": "mK93sB2Xz9Q@L8N4A1pFvJtEcgY6rHbM",
+		"erp_public_key": "config/certs/erp_public_key.pem",
+		"public_key": "config/certs/public_key.pem",
+		"private_key": "config/certs/private_key.pem"
+	},
+	"rptServiceLink":"http://192.168.1.151:9985/convert",
+	"rptFilePath":"./",
+	"rptAuthKey":"cnp4test",
+	"isTLS": false,
+	"tlsKeyPath": "",
+	"tlsCertPath": "",
+	"senderEmail": "pnrgasag@gmail.com",
+    "password": "wfsjqatxihfeghbt",
+	"smtp_host": "smtp.gmail.com",
+	"smtp_port": 587,
+	"url": {
+        "uiurl": "http://118.67.213.45:8034"
+    }
+}
