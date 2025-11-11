@@ -7,8 +7,8 @@ import (
 	"os"
 	"strings"
 
-	// docs "github.com/satcomit/hrms/docs"
-	"github.com/satcomit/hrms/internal/service"
+	// docs "github.com/rest/api/docs"
+	"github.com/rest/api/internal/service"
 	"github.com/spf13/viper"
 )
 
