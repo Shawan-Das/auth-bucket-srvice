@@ -9,6 +9,41 @@ import (
 	"context"
 )
 
+const createSatcomData = `-- name: CreateSatcomData :exec
+INSERT INTO common.satcom_data(company, category, "type", "date", "time", db_port, ui_port, url, ip, status)
+VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+`
+
+type CreateSatcomDataParams struct {
+	Company  string `db:"company" json:"company"`
+	Category string `db:"category" json:"category"`
+	Type     string `db:"type" json:"type"`
+	Date     string `db:"date" json:"date"`
+	Time     string `db:"time" json:"time"`
+	DbPort   string `db:"db_port" json:"db_port"`
+	UiPort   string `db:"ui_port" json:"ui_port"`
+	Url      string `db:"url" json:"url"`
+	Ip       string `db:"ip" json:"ip"`
+	Status   bool   `db:"status" json:"status"`
+}
+
+// --------------------- SATCOM DATA ------------------------------
+func (q *Queries) CreateSatcomData(ctx context.Context, arg CreateSatcomDataParams) error {
+	_, err := q.db.Exec(ctx, createSatcomData,
+		arg.Company,
+		arg.Category,
+		arg.Type,
+		arg.Date,
+		arg.Time,
+		arg.DbPort,
+		arg.UiPort,
+		arg.Url,
+		arg.Ip,
+		arg.Status,
+	)
+	return err
+}
+
 const createUser = `-- name: CreateUser :exec
 INSERT INTO common.users(user_name, email, phone, pass, role) 
 VALUES($1, $2, $3, $4, $5)
@@ -31,6 +66,54 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
 		arg.Role,
 	)
 	return err
+}
+
+const deleteSatcomData = `-- name: DeleteSatcomData :exec
+DELETE FROM common.satcom_data
+WHERE id = $1
+`
+
+func (q *Queries) DeleteSatcomData(ctx context.Context, id int32) error {
+	_, err := q.db.Exec(ctx, deleteSatcomData, id)
+	return err
+}
+
+const getAllSatcomData = `-- name: GetAllSatcomData :many
+SELECT id, company, category, "type", "date", "time", db_port, ui_port, url, ip, status
+FROM common.satcom_data
+ORDER BY id
+`
+
+func (q *Queries) GetAllSatcomData(ctx context.Context) ([]CommonSatcomDatum, error) {
+	rows, err := q.db.Query(ctx, getAllSatcomData)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []CommonSatcomDatum
+	for rows.Next() {
+		var i CommonSatcomDatum
+		if err := rows.Scan(
+			&i.ID,
+			&i.Company,
+			&i.Category,
+			&i.Type,
+			&i.Date,
+			&i.Time,
+			&i.DbPort,
+			&i.UiPort,
+			&i.Url,
+			&i.Ip,
+			&i.Status,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getAllUsers = `-- name: GetAllUsers :many
@@ -63,6 +146,31 @@ func (q *Queries) GetAllUsers(ctx context.Context) ([]GetAllUsersRow, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+const getSatcomDataById = `-- name: GetSatcomDataById :one
+SELECT id, company, category, "type", "date", "time", db_port, ui_port, url, ip, status
+FROM common.satcom_data
+WHERE id = $1
+`
+
+func (q *Queries) GetSatcomDataById(ctx context.Context, id int32) (CommonSatcomDatum, error) {
+	row := q.db.QueryRow(ctx, getSatcomDataById, id)
+	var i CommonSatcomDatum
+	err := row.Scan(
+		&i.ID,
+		&i.Company,
+		&i.Category,
+		&i.Type,
+		&i.Date,
+		&i.Time,
+		&i.DbPort,
+		&i.UiPort,
+		&i.Url,
+		&i.Ip,
+		&i.Status,
+	)
+	return i, err
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
@@ -128,5 +236,43 @@ type UpdatePasswordParams struct {
 
 func (q *Queries) UpdatePassword(ctx context.Context, arg UpdatePasswordParams) error {
 	_, err := q.db.Exec(ctx, updatePassword, arg.Pass, arg.PssValid, arg.Email)
+	return err
+}
+
+const updateSatcomData = `-- name: UpdateSatcomData :exec
+UPDATE common.satcom_data
+SET company = $1, category = $2, "type" = $3, "date" = $4, "time" = $5, 
+    db_port = $6, ui_port = $7, url = $8, ip = $9, status = $10
+WHERE id = $11
+`
+
+type UpdateSatcomDataParams struct {
+	Company  string `db:"company" json:"company"`
+	Category string `db:"category" json:"category"`
+	Type     string `db:"type" json:"type"`
+	Date     string `db:"date" json:"date"`
+	Time     string `db:"time" json:"time"`
+	DbPort   string `db:"db_port" json:"db_port"`
+	UiPort   string `db:"ui_port" json:"ui_port"`
+	Url      string `db:"url" json:"url"`
+	Ip       string `db:"ip" json:"ip"`
+	Status   bool   `db:"status" json:"status"`
+	ID       int32  `db:"id" json:"id"`
+}
+
+func (q *Queries) UpdateSatcomData(ctx context.Context, arg UpdateSatcomDataParams) error {
+	_, err := q.db.Exec(ctx, updateSatcomData,
+		arg.Company,
+		arg.Category,
+		arg.Type,
+		arg.Date,
+		arg.Time,
+		arg.DbPort,
+		arg.UiPort,
+		arg.Url,
+		arg.Ip,
+		arg.Status,
+		arg.ID,
+	)
 	return err
 }

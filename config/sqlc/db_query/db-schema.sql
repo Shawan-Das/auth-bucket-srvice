@@ -13,3 +13,17 @@ CREATE TABLE common.users (
 	otp_exp timestamp NULL,
 	"role" text NOT NULL
 );
+
+CREATE TABLE common.satcom_data (
+	id serial4 NOT NULL,
+	company text NOT NULL,
+	category text NOT NULL,
+	"type" text NOT NULL,
+	"date" text NOT NULL,
+	"time" text NOT NULL,
+	db_port text NOT NULL,
+	ui_port text NOT NULL,
+	url text NOT NULL,
+	ip text NOT NULL,
+	status bool NOT NULL
+);
