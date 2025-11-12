@@ -30,3 +30,7 @@ winBuild:
 dev:
 	go build -o ${OUTPUT}/${BINARY}.exe ${MAIN}
 	./${OUTPUT}/${BINARY}.exe -c ./config/connection/dev-config.json --port 7070
+
+server:
+	go build -o ${OUTPUT}/${BINARY} ${MAIN}
+	./${OUTPUT}/${BINARY} -c ./config/connection/dev-config.json --port 7070
