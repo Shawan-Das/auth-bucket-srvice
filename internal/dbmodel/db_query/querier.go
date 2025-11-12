@@ -18,8 +18,12 @@ type Querier interface {
 	GetSatcomDataById(ctx context.Context, id int32) (CommonSatcomDatum, error)
 	// --------------------- AUTHENTICATION ------------------------------
 	GetUserByEmail(ctx context.Context, email string) (CommonUser, error)
+	GetUserByUserName(ctx context.Context, userName string) (CommonUser, error)
+	GetUserByPhone(ctx context.Context, phone string) (CommonUser, error)
+	GetUserById(ctx context.Context, userID int32) (CommonUser, error)
 	GetUserByLogin(ctx context.Context, userName string) (CommonUser, error)
 	UpdatePassword(ctx context.Context, arg UpdatePasswordParams) error
+	UpdateUser(ctx context.Context, arg UpdateUserParams) error
 	UpdateSatcomData(ctx context.Context, arg UpdateSatcomDataParams) error
 }
 

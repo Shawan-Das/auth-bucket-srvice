@@ -4,6 +4,21 @@ SELECT user_id, user_name, email, phone, pass, pss_valid, otp, otp_valid, otp_ex
 FROM common.users 
 WHERE email = $1;
 
+-- name: GetUserByUserName :one
+SELECT user_id, user_name, email, phone, pass, pss_valid, otp, otp_valid, otp_exp, role 
+FROM common.users 
+WHERE user_name = $1;
+
+-- name: GetUserByPhone :one
+SELECT user_id, user_name, email, phone, pass, pss_valid, otp, otp_valid, otp_exp, role 
+FROM common.users 
+WHERE phone = $1;
+
+-- name: GetUserById :one
+SELECT user_id, user_name, email, phone, pass, pss_valid, otp, otp_valid, otp_exp, role 
+FROM common.users 
+WHERE user_id = $1;
+
 -- name: GetUserByLogin :one
 SELECT user_id, user_name, email, phone, pass, pss_valid, otp, otp_valid, otp_exp, role 
 FROM common.users 
@@ -17,6 +32,11 @@ VALUES($1, $2, $3, $4, $5);
 UPDATE common.users 
 SET pass = $1, pss_valid = $2 
 WHERE email = $3;
+
+-- name: UpdateUser :exec
+UPDATE common.users 
+SET user_name = $1, email = $2, phone = $3, role = $4
+WHERE user_id = $5;
 
 -- name: GetAllUsers :many
 SELECT user_id, user_name, email 

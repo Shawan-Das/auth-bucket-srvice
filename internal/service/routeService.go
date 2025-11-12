@@ -77,6 +77,11 @@ func (s *RESTService) AddRouters(apiBase string, router *gin.Engine) {
 		c.JSON(resp.StatusCode, resp)
 	})
 
+	router.PUT("/api/auth/update", func(c *gin.Context) {
+		resp := s.updateUser(c)
+		c.JSON(resp.StatusCode, resp)
+	})
+
 	router.GET("/api/auth/users", func(c *gin.Context) {
 		resp := s.getAllUsers(c)
 		c.JSON(resp.StatusCode, resp)

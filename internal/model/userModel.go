@@ -12,3 +12,11 @@ type CreateUserInput struct {
 	UserName string `json:"userName,omitempty"`
 	Role     string `json:"role,omitempty"`
 }
+
+type UpdateUserInput struct {
+	UserID   int32  `json:"userId"`
+	Email    string `json:"email"`
+	Phone    string `json:"phone"`
+	UserName string `json:"userName"`
+	Role     string `json:"role,omitempty"`
+}

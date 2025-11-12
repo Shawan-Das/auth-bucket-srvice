@@ -198,6 +198,78 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (CommonUser,
 	return i, err
 }
 
+const getUserByUserName = `-- name: GetUserByUserName :one
+SELECT user_id, user_name, email, phone, pass, pss_valid, otp, otp_valid, otp_exp, role 
+FROM common.users 
+WHERE user_name = $1
+`
+
+func (q *Queries) GetUserByUserName(ctx context.Context, userName string) (CommonUser, error) {
+	row := q.db.QueryRow(ctx, getUserByUserName, userName)
+	var i CommonUser
+	err := row.Scan(
+		&i.UserID,
+		&i.UserName,
+		&i.Email,
+		&i.Phone,
+		&i.Pass,
+		&i.PssValid,
+		&i.Otp,
+		&i.OtpValid,
+		&i.OtpExp,
+		&i.Role,
+	)
+	return i, err
+}
+
+const getUserByPhone = `-- name: GetUserByPhone :one
+SELECT user_id, user_name, email, phone, pass, pss_valid, otp, otp_valid, otp_exp, role 
+FROM common.users 
+WHERE phone = $1
+`
+
+func (q *Queries) GetUserByPhone(ctx context.Context, phone string) (CommonUser, error) {
+	row := q.db.QueryRow(ctx, getUserByPhone, phone)
+	var i CommonUser
+	err := row.Scan(
+		&i.UserID,
+		&i.UserName,
+		&i.Email,
+		&i.Phone,
+		&i.Pass,
+		&i.PssValid,
+		&i.Otp,
+		&i.OtpValid,
+		&i.OtpExp,
+		&i.Role,
+	)
+	return i, err
+}
+
+const getUserById = `-- name: GetUserById :one
+SELECT user_id, user_name, email, phone, pass, pss_valid, otp, otp_valid, otp_exp, role 
+FROM common.users 
+WHERE user_id = $1
+`
+
+func (q *Queries) GetUserById(ctx context.Context, userID int32) (CommonUser, error) {
+	row := q.db.QueryRow(ctx, getUserById, userID)
+	var i CommonUser
+	err := row.Scan(
+		&i.UserID,
+		&i.UserName,
+		&i.Email,
+		&i.Phone,
+		&i.Pass,
+		&i.PssValid,
+		&i.Otp,
+		&i.OtpValid,
+		&i.OtpExp,
+		&i.Role,
+	)
+	return i, err
+}
+
 const getUserByLogin = `-- name: GetUserByLogin :one
 SELECT user_id, user_name, email, phone, pass, pss_valid, otp, otp_valid, otp_exp, role 
 FROM common.users 
@@ -236,6 +308,31 @@ type UpdatePasswordParams struct {
 
 func (q *Queries) UpdatePassword(ctx context.Context, arg UpdatePasswordParams) error {
 	_, err := q.db.Exec(ctx, updatePassword, arg.Pass, arg.PssValid, arg.Email)
+	return err
+}
+
+const updateUser = `-- name: UpdateUser :exec
+UPDATE common.users 
+SET user_name = $1, email = $2, phone = $3, role = $4
+WHERE user_id = $5
+`
+
+type UpdateUserParams struct {
+	UserName string `db:"user_name" json:"user_name"`
+	Email    string `db:"email" json:"email"`
+	Phone    string `db:"phone" json:"phone"`
+	Role     string `db:"role" json:"role"`
+	UserID   int32  `db:"user_id" json:"user_id"`
+}
+
+func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) error {
+	_, err := q.db.Exec(ctx, updateUser,
+		arg.UserName,
+		arg.Email,
+		arg.Phone,
+		arg.Role,
+		arg.UserID,
+	)
 	return err
 }
 

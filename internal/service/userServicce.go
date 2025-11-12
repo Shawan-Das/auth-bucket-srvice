@@ -28,20 +28,33 @@ func (s *RESTService) createUser(c *gin.Context) APIResponse {
 		return BuildResponse400("Email, password, and phone are required")
 	}
 
-	// Check if user already exists
+	// Set default values
+	userName := input.UserName
+	if userName == "" {
+		userName = input.Email // Use email as default username
+	}
+
+	// Check if user already exists - check all three unique fields
 	ctx := context.Background()
 	db := s.dbConn.GetPool()
 	qtx := auth.New(db)
 
+	// Check email uniqueness
 	_, err := qtx.GetUserByEmail(ctx, input.Email)
 	if err == nil {
 		return BuildResponse400("User with this email already exists")
 	}
 
-	// Set default values
-	userName := input.UserName
-	if userName == "" {
-		userName = input.Email // Use email as default username
+	// Check username uniqueness
+	_, err = qtx.GetUserByUserName(ctx, userName)
+	if err == nil {
+		return BuildResponse400("User with this username already exists")
+	}
+
+	// Check phone uniqueness
+	_, err = qtx.GetUserByPhone(ctx, input.Phone)
+	if err == nil {
+		return BuildResponse400("User with this phone number already exists")
 	}
 	role := input.Role
 	if role == "" {
@@ -109,8 +122,9 @@ func (s *RESTService) validateLogin(c *gin.Context) APIResponse {
 		"user_id":   user.UserID,
 		"user_name": user.UserName,
 		"email":     user.Email,
-		"phone":     user.Phone,
 		"role":      user.Role,
+		"token":     jwtToken,
+		// "phone":     user.Phone,
 	})
 	response.Token = &jwtToken
 
@@ -156,6 +170,77 @@ func (s *RESTService) resetPassword(c *gin.Context) APIResponse {
 	}
 
 	return BuildResponse200("Password reset successfully", nil)
+}
+
+// /api/auth/update - update user
+func (s *RESTService) updateUser(c *gin.Context) APIResponse {
+	var input model.UpdateUserInput
+	if !parseInput(c, &input) {
+		return BuildResponse400("Invalid input provided")
+	}
+
+	// Validate required fields
+	if input.UserID == 0 || input.Email == "" || input.Phone == "" || input.UserName == "" {
+		return BuildResponse400("User ID, email, phone, and username are required")
+	}
+
+	ctx := context.Background()
+	db := s.dbConn.GetPool()
+	qtx := auth.New(db)
+
+	// Check if user exists
+	currentUser, err := qtx.GetUserById(ctx, input.UserID)
+	if err != nil {
+		_asLogger.Errorf("Error getting user: %v", err)
+		return BuildResponse404("User not found", false)
+	}
+
+	// Check email uniqueness (excluding current user)
+	if input.Email != currentUser.Email {
+		_, err = qtx.GetUserByEmail(ctx, input.Email)
+		if err == nil {
+			return BuildResponse400("User with this email already exists")
+		}
+	}
+
+	// Check username uniqueness (excluding current user)
+	if input.UserName != currentUser.UserName {
+		_, err = qtx.GetUserByUserName(ctx, input.UserName)
+		if err == nil {
+			return BuildResponse400("User with this username already exists")
+		}
+	}
+
+	// Check phone uniqueness (excluding current user)
+	if input.Phone != currentUser.Phone {
+		_, err = qtx.GetUserByPhone(ctx, input.Phone)
+		if err == nil {
+			return BuildResponse400("User with this phone number already exists")
+		}
+	}
+
+	// Set default role if not provided
+	role := input.Role
+	if role == "" {
+		role = currentUser.Role // Keep existing role if not provided
+	}
+
+	// Update user
+	updateParams := auth.UpdateUserParams{
+		UserName: input.UserName,
+		Email:    input.Email,
+		Phone:    input.Phone,
+		Role:     role,
+		UserID:   input.UserID,
+	}
+
+	err = qtx.UpdateUser(ctx, updateParams)
+	if err != nil {
+		_asLogger.Errorf("Error updating user: %v", err)
+		return BuildResponse500("Failed to update user", err.Error())
+	}
+
+	return BuildResponse200("User updated successfully", nil)
 }
 
 // /api/auth/users - get all users (requires authentication)
