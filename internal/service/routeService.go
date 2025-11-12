@@ -81,4 +81,30 @@ func (s *RESTService) AddRouters(apiBase string, router *gin.Engine) {
 		resp := s.getAllUsers(c)
 		c.JSON(resp.StatusCode, resp)
 	})
+
+	// Satcom Data CRUD routes
+	router.POST("/api/satcom", func(c *gin.Context) {
+		resp := s.createSatcomData(c)
+		c.JSON(resp.StatusCode, resp)
+	})
+
+	router.GET("/api/satcom", func(c *gin.Context) {
+		resp := s.getAllSatcomData(c)
+		c.JSON(resp.StatusCode, resp)
+	})
+
+	router.GET("/api/satcom/:id", func(c *gin.Context) {
+		resp := s.getSatcomDataById(c)
+		c.JSON(resp.StatusCode, resp)
+	})
+
+	router.PUT("/api/satcom/:id", func(c *gin.Context) {
+		resp := s.updateSatcomData(c)
+		c.JSON(resp.StatusCode, resp)
+	})
+
+	router.DELETE("/api/satcom/:id", func(c *gin.Context) {
+		resp := s.deleteSatcomData(c)
+		c.JSON(resp.StatusCode, resp)
+	})
 }

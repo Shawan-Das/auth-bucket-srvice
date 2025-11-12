@@ -9,12 +9,18 @@ import (
 )
 
 type Querier interface {
+	// --------------------- SATCOM DATA ------------------------------
+	CreateSatcomData(ctx context.Context, arg CreateSatcomDataParams) error
 	CreateUser(ctx context.Context, arg CreateUserParams) error
+	DeleteSatcomData(ctx context.Context, id int32) error
+	GetAllSatcomData(ctx context.Context) ([]CommonSatcomDatum, error)
 	GetAllUsers(ctx context.Context) ([]GetAllUsersRow, error)
+	GetSatcomDataById(ctx context.Context, id int32) (CommonSatcomDatum, error)
 	// --------------------- AUTHENTICATION ------------------------------
 	GetUserByEmail(ctx context.Context, email string) (CommonUser, error)
 	GetUserByLogin(ctx context.Context, userName string) (CommonUser, error)
 	UpdatePassword(ctx context.Context, arg UpdatePasswordParams) error
+	UpdateSatcomData(ctx context.Context, arg UpdateSatcomDataParams) error
 }
 
 var _ Querier = (*Queries)(nil)

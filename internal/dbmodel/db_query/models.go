@@ -8,6 +8,20 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type CommonSatcomDatum struct {
+	ID       int32  `db:"id" json:"id"`
+	Company  string `db:"company" json:"company"`
+	Category string `db:"category" json:"category"`
+	Type     string `db:"type" json:"type"`
+	Date     string `db:"date" json:"date"`
+	Time     string `db:"time" json:"time"`
+	DbPort   string `db:"db_port" json:"db_port"`
+	UiPort   string `db:"ui_port" json:"ui_port"`
+	Url      string `db:"url" json:"url"`
+	Ip       string `db:"ip" json:"ip"`
+	Status   bool   `db:"status" json:"status"`
+}
+
 type CommonUser struct {
 	UserID   int32            `db:"user_id" json:"user_id"`
 	UserName string           `db:"user_name" json:"user_name"`
