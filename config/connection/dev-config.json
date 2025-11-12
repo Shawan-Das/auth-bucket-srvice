@@ -1,13 +1,13 @@
 {
-	"dbhost":"db.gtfqhsjwwlzmcinusayh.supabase.co",
+	"dbhost":"localhost",
 	"dbPort":5432,
 	"dbname":"postgres",
 	"dbuid":"postgres",
-	"dbpassword":"rzBqING3j6nyiiXD",
+	"dbpassword":"password",
 	"timeout": 100,
 	"connRetryCount": 1,
 	"connRetryInterval": 5000,
-	"jwtKey":"s@3j7a91j0K1jm2!3921)82",
+	"jwtKey":"s@3j7a91j0K1&*&h*^#21)82",
 	"bypassAuth":[
 		"/api/auth/create",
 		"/api/auth/login",
@@ -15,7 +15,7 @@
 		"/apidoc/index.html",
 		"/apidoc/swagger.yaml"
 	],
-	"adminEmailId":"admin@satcombd.com",
+	"adminEmailId":"admin@usermail.com",
 	"adminPassword":"admin4test",
 	"adminEmpCode":"0000",
 	"rptServiceLink":"http://192.168.1.151:9985/convert",
@@ -29,6 +29,6 @@
 	"smtp_host": "smtp.gmail.com",
 	"smtp_port": 587,
 	"url": {
-        "uiurl": "ui url"
+        "uiurl": "http://localhost:4200"
     }
 }
