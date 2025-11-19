@@ -2,3 +2,5 @@ build/exec/*
 **/output.json
 **/input.json
 .vscode/
+.exe
+api
