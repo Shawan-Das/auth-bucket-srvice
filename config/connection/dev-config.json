@@ -1,9 +1,9 @@
 {
-	"dbhost":"db.gtfqhsjwwlzmcinusayh.supabase.co",
+	"dbhost":"dlocalhost",
 	"dbPort":5432,
 	"dbname":"postgres",
 	"dbuid":"postgres",
-	"dbpassword":"rzBqING3j6nyiiXD",
+	"dbpassword":"passw0rd",
 	"timeout": 100,
 	"connRetryCount": 1,
 	"connRetryInterval": 5000,
